@@ -11,12 +11,15 @@ object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq (
     name := "sync-test",
     version := "0.1",
-    scalaVersion := "2.10.1",
+  scalaVersion := "2.11.0-M7",
     scalacOptions ++= Seq("-deprecation", "-optimise"),
     resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % "2.10.1"
-      , "com.github.axel22" %% "scalameter" % "0.4"
+      "org.scala-lang" % "scala-reflect" % "2.11.0-SNAPSHOT"
+      , "com.github.axel22" % "scalameter_2.11" % "0.5-SNAPSHOT"
+      , "org.ow2.asm" % "asm-commons" % "4.2"
+      , "com.github.scala-blitz" %% "scala-blitz" % "1.0-M1"
+            
     ),
     testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
     logBuffered := false
@@ -32,7 +35,10 @@ object WorkstealingBuild extends Build {
     "root",
     file("."),
     settings = BuildSettings.buildSettings
-  )
+  ) 
+//dependsOn (scalameter)
+
+//  lazy val scalameter = RootProject(uri("git://github.com/axel22/scalameter.git"))
 
 }
 

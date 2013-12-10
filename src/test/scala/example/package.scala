@@ -187,6 +187,49 @@ package object example {
     }
   }
 
+  final class LazySimCellVersion5(x: Int) extends LazySimCellWithPublicBitmap {
+    import LazySimCellWithPublicBitmap._
+    var value_0: Int = _
+    var bitmap2: Int= _
+
+    final def value():Int = {
+      if(bitmap2 == 1) value_0
+      else value0()
+    }
+    @tailrec final def value0(): Int = (arfu_0.get(this): @switch) match {
+      case 0 =>
+        if (arfu_0.compareAndSet(this, 0, 1)) {
+          val result = 0
+          value_0 = result
+          bitmap2 = 1
+          @tailrec def complete(): Unit = (arfu_0.get(this): @switch) match {
+            case 1 =>
+              if (!arfu_0.compareAndSet(this, 1, 3)) complete()
+            case 2 =>
+              if (arfu_0.compareAndSet(this, 2, 3)) {
+                synchronized { notifyAll() }
+              } else complete()
+          }
+
+          complete()
+          result
+        } else value()
+      case 1 =>
+        arfu_0.compareAndSet(this, 1, 2)
+        synchronized {
+          while (arfu_0.get(this) != 3) wait()
+        }
+        value_0
+      case 2 =>
+        synchronized {
+          while (arfu_0.get(this) != 3) wait()
+        }
+        value_0
+      case 3 => value_0
+    }
+  }
+
+
 }
 
 

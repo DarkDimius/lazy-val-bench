@@ -2,12 +2,14 @@ package example;
 import java.lang.invoke.*;
 
 
-public final class LazyValsHm extends SwitchPoint{
+public final class LazyValsHm {
+    private final SwitchPoint sp = new SwitchPoint();
+
  
     public LazyValsHm(int value) {}
     private int value__;
 
-    private final MethodHandle accessor = guardWithTest(initter, getter);;
+    private final MethodHandle accessor = sp.guardWithTest(initter, getter);;
     public int value() throws Throwable {return (int) accessor.invoke(this);}
 
     static private final MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -42,7 +44,7 @@ public final class LazyValsHm extends SwitchPoint{
 	    if(!who.hasBeenInvalidated())
 	    {*/
 		    who.value__=0;
-		    SwitchPoint.invalidateAll(new SwitchPoint[]{ who });
+		    SwitchPoint.invalidateAll(new SwitchPoint[]{ who.sp });
 /*		    accessor.notifyAll();
 		    		}
 	    else {

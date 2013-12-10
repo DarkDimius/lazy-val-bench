@@ -9,8 +9,10 @@ import java.lang.invoke._
 class SwitchPointBenchmark extends PerformanceTest.Regression with Serializable {
   def persistor = Persistor.None
 
+  class stupid(var i: Int);
+
   val repetitions = Gen.range("size")(10000, 50000, 10000)
-  val emptyArrays = for(rep <- repetitions) yield new Array[SwitchPoint](rep) 
+  val emptyArrays = for(rep <- repetitions) yield new Array[AnyRef](rep) 
   val createdArrays = for(rep <- repetitions) yield {
     val arr = new Array[LazyValsHm](rep)
     for(i <- 0 until arr.length) {
@@ -42,6 +44,16 @@ class SwitchPointBenchmark extends PerformanceTest.Regression with Serializable 
       val n = a.length
       while(i < n) {
         a(i) = new SwitchPoint()
+        i = i + 1
+      }
+      a
+    }
+
+    using(emptyArrays) curve("stupid-creation") in { a =>
+      var i = 0
+      val n = a.length
+      while(i < n) {
+        a(i) = new stupid(i)
         i = i + 1
       }
       a
