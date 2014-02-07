@@ -8,7 +8,7 @@ import org.scalameter.api._
 
 
 class MemoryFootprint extends PerformanceTest.Regression {
-  def persistor = Persistor.None
+  def persistor = new SerializationPersistor
   override def measurer = new Executor.Measurer.MemoryFootprint
 
   val repetitions = Gen.range("size")(1000000, 5000000, 1000000)
@@ -45,6 +45,11 @@ class MemoryFootprint extends PerformanceTest.Regression {
 
     using(objects[LazySimCellVersion4General]) curve("lazy-simulation-v4-general") in { array =>
       for (i <- 0 until array.length) array(i) = new LazySimCellVersion4General(i)
+      array
+    }
+
+    using(objects[LazySimCellVersionD0]) curve("lazy-simulation-d0") in { array =>
+      for (i <- 0 until array.length) array(i) = new LazySimCellVersionD0(i)
       array
     }
 

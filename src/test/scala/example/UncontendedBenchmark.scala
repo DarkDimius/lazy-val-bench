@@ -7,7 +7,8 @@ import org.scalameter.api._
 
 
 class UncontendedBenchmark extends PerformanceTest.Regression with Serializable {
-  def persistor = Persistor.None
+
+  def persistor = new SerializationPersistor
 
   val repetitions = Gen.range("size")(100000, 500000, 100000)
 
@@ -117,6 +118,16 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
       var i = 0
       while (i < n) {
         val c = new LazySimCellVersion5(i)
+        cell = c
+        c.value
+        i += 1
+      }
+    }
+
+    using(repetitions) curve("lazy-simulation-d0") in { n =>
+      var i = 0
+      while (i < n) {
+        val c = new LazySimCellVersionD0(i)
         cell = c
         c.value
         i += 1

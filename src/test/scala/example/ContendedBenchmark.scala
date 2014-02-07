@@ -8,7 +8,8 @@ import org.scalameter.api._
 
 
 class ContendedBenchmark extends PerformanceTest.Regression {
-  def persistor = Persistor.None
+
+  def persistor = new SerializationPersistor
 
   val repetitions = Gen.range("size")(1000000, 5000000, 1000000)
   def objects[T <: AnyRef: ClassTag](newCell: Int => T) = for (sz <- repetitions) yield {
@@ -98,6 +99,24 @@ class ContendedBenchmark extends PerformanceTest.Regression {
 
     using(objects(i => new LazySimCellVersion5(i))) curve("lazy-simulation-v5") setUp {
       arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersion5(i)
+    } tearDown {
+      arr => for (i <- 0 until arr.length) arr(i) = null
+    } in { array =>
+      val threads = for (_ <- 0 until 4) yield new Thread {
+        override def run() {
+          var i = 0
+          while (i < array.length) {
+            array(i).value
+            i += 1
+          }
+        }
+      }
+      threads.foreach(_.start())
+      threads.foreach(_.join())
+    }
+
+    using(objects(i => new LazySimCellVersionD0(i))) curve("lazy-simulation-d0") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD0(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
     } in { array =>

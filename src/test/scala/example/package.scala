@@ -213,7 +213,7 @@ package object example {
 
           complete()
           result
-        } else value()
+        } else value0()
       case 1 =>
         arfu_0.compareAndSet(this, 1, 2)
         synchronized {
@@ -229,7 +229,81 @@ package object example {
     }
   }
 
+  class LazyBitMap0 {
+    var bitmap_0: Int = 0
+  }
 
+
+  final class LazySimCellVersionD0(x: Int) extends LazyBitMap0{
+    import LazySimCellVersionD0._
+    var value_0: Int = _
+    @tailrec final def value(): Int = (bitmap_0: @switch) match {
+      case 0 =>
+        if (compareAndSet(this, 0, 1)) {
+          val result = 0
+          value_0 = result
+
+          @tailrec def complete(): Unit = (get(this): @switch) match {
+            case 1 =>
+              if (!compareAndSet(this, 1, 3)) complete()
+            case 2 =>
+              if (compareAndSet(this, 2, 3)) {
+                getMonitor(this).synchronized { notifyAll() }
+              } else complete()
+          }
+
+          complete()
+          result
+        } else value()
+      case 1 =>
+        compareAndSet(this, 1, 2)
+        getMonitor(this).synchronized {
+          while (get(this) != 3) wait()
+        }
+        value_0
+      case 2 =>
+        getMonitor(this).synchronized {
+          while (get(this) != 3) wait()
+        }
+        value_0
+      case 3 => value_0
+    }
+  }
+
+ // all this data is thought to be global for all lazy vals
+
+  object LazySimCellVersionD0 {
+    import sun.misc.Unsafe
+
+    val unsafe = getUnsafe()
+    val BITMAP_0_OFFSET = unsafe.objectFieldOffset(classOf[LazyBitMap0].getDeclaredField("bitmap_0"))
+    @inline def compareAndSet(target: LazyBitMap0, expected: Int, newValue: Int) = 
+      unsafe.compareAndSwapInt(target, BITMAP_0_OFFSET, expected, newValue)
+
+    @inline def get(target: LazyBitMap0) = unsafe.getIntVolatile(target, BITMAP_0_OFFSET)
+
+    val processors = java.lang.Runtime.getRuntime().availableProcessors()
+
+    val base = processors * processors * 2
+    val monitors = (0 to base).map{x => new Object()}.toArray
+
+    def getMonitor(obj: Object, fieldId: Int = 0) = {
+      var id = (java.lang.System.identityHashCode(obj) + fieldId) % base
+      if (id < 0) id += base
+      monitors(id)
+    }
+
+    def getUnsafe(): Unsafe = {
+      if (this.getClass.getClassLoader == null) Unsafe.getUnsafe()
+      try {
+        val fld = classOf[Unsafe].getDeclaredField("theUnsafe")
+        fld.setAccessible(true)
+        return fld.get(this.getClass).asInstanceOf[Unsafe]
+      } catch {
+        case e: Throwable => throw new RuntimeException("Could not obtain access to sun.misc.Unsafe", e)
+      }
+    }
+  }
 }
 
 
