@@ -21,8 +21,8 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
     exec.maxWarmupRuns -> 150,
     exec.benchRuns -> 25,
     exec.independentSamples -> 1,
-    exec.jvmflags -> "-Xms3072M -Xmx3072M",
-    exec.jvmcmd -> "java8 -server"
+    exec.jvmflags -> "-Xms3072M -Xmx3072M"
+//    ,exec.jvmcmd -> "java8 -server"
   ) in {
     using(repetitions) curve("non-lazy") in { n =>
       var i = 0

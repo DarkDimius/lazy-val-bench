@@ -248,7 +248,8 @@ package object example {
               if (!compareAndSet(this, 1, 3)) complete()
             case 2 =>
               if (compareAndSet(this, 2, 3)) {
-                getMonitor(this).synchronized { notifyAll() }
+                val monitor = getMonitor(this)
+                monitor.synchronized {  monitor.notifyAll() }
               } else complete()
           }
 
@@ -257,13 +258,15 @@ package object example {
         } else value()
       case 1 =>
         compareAndSet(this, 1, 2)
-        getMonitor(this).synchronized {
-          while (get(this) != 3) wait()
+        val monitor = getMonitor(this)
+        monitor.synchronized {
+          while (get(this) != 3) monitor.wait()
         }
         value_0
       case 2 =>
-        getMonitor(this).synchronized {
-          while (get(this) != 3) wait()
+        val monitor = getMonitor(this)
+       monitor.synchronized {
+          while (get(this) != 3) monitor.wait()
         }
         value_0
       case 3 => value_0
@@ -291,7 +294,8 @@ package object example {
               if (!compareAndSet(this, 1, newState)) complete(newState)
             case 2 =>
               if (compareAndSet(this, 2, newState)) {
-                getMonitor(this).synchronized { notifyAll() }
+                val monitor = getMonitor(this)
+                monitor.synchronized {  monitor.notifyAll() }
               } else complete(newState)
           }
 
@@ -300,14 +304,16 @@ package object example {
         } else value()
       case 1 =>
         if(compareAndSet(this, 1, 2)) {
-          getMonitor(this).synchronized {
-            while (get(this) == 2) wait()
+          val monitor = getMonitor(this)
+          monitor.synchronized {
+            while (get(this) == 2) monitor.wait()
           }
         }
         value()
       case 2 =>
-        getMonitor(this).synchronized {
-          while (get(this) == 2) wait()
+        val monitor = getMonitor(this)
+        monitor.synchronized {
+          while (get(this) == 2) monitor.wait()
         }
         value
       case 3 => value_0
@@ -357,7 +363,8 @@ package object example {
     @tailrec final def value(): Int = (bitmap_0: @switch) match {
       case 0 =>
         var aquired = true
-        getMonitor(this).synchronized {
+        val monitor = getMonitor(this)
+        monitor.synchronized {
           if (bitmap_0 == 0) {
             bitmap_0 = 1
           } else {
@@ -365,30 +372,32 @@ package object example {
             if (bitmap_0 == 1) {
               bitmap_0 = 2
             }
-            while (bitmap_0 == 2) wait()
+            while (bitmap_0 == 2) monitor.wait()
           }
         }
         if(aquired) {
           val result = 0
           value_0 = result
-          getMonitor(this).synchronized {
-            if (bitmap_0 == 2) notifyAll()
+          monitor.synchronized {
+            if (bitmap_0 == 2)  monitor.notifyAll()
             bitmap_0 = 3
           }
           value_0
         }
         else value()
       case 1 =>
-        getMonitor(this).synchronized {
+        val monitor = getMonitor(this)
+        monitor.synchronized {
           if (bitmap_0 == 1) {
             bitmap_0 = 2
           }
-          while (bitmap_0 == 2) wait()
+          while (bitmap_0 == 2) monitor.wait()
         }
         value_0
       case 2 =>
-        getMonitor(this).synchronized {
-          while (bitmap_0 == 2) wait()
+        val monitor = getMonitor(this)
+        monitor.synchronized {
+          while (bitmap_0 == 2) monitor.wait()
         }
         value_0
       case 3 => value_0
@@ -402,7 +411,8 @@ package object example {
     @tailrec final def value(): Int = (bitmap_0: @switch) match {
       case 0 =>
         var aquired = true
-        getMonitor(this).synchronized {
+        val monitor = getMonitor(this)
+        monitor.synchronized {
           if (bitmap_0 == 0) {
             bitmap_0 = 1
           } else {
@@ -410,23 +420,24 @@ package object example {
             if (bitmap_0 == 1) {
               bitmap_0 = 2
             }
-            while (bitmap_0 == 2) wait()
+            while (bitmap_0 == 2) monitor.wait()
           }
         }
         if(aquired) {
+          val monitor = getMonitor(this)
           try {
             val result = 0
             value_0 = result
-            getMonitor(this).synchronized {
-              if (bitmap_0 == 2) notifyAll()
+            monitor.synchronized {
+              if (bitmap_0 == 2) monitor.notifyAll()
               bitmap_0 = 3
             }
             value_0
           }
           catch {
             case e: Throwable=>
-              getMonitor(this).synchronized {
-                if (bitmap_0 == 2) notifyAll()
+              monitor.synchronized {
+                if (bitmap_0 == 2) monitor.notifyAll()
                 bitmap_0 = 0
               }
               throw e
@@ -434,16 +445,18 @@ package object example {
         }
         else value()
       case 1 =>
-        getMonitor(this).synchronized {
+        val monitor = getMonitor(this)
+        monitor.synchronized {
           if (bitmap_0 == 1) {
             bitmap_0 = 2
           }
-          while (bitmap_0 == 2) wait()
+          while (bitmap_0 == 2) monitor.wait()
         }
         value()
       case 2 =>
-        getMonitor(this).synchronized {
-          while (bitmap_0 == 2) wait()
+        val monitor = getMonitor(this)
+        monitor.synchronized {
+          while (bitmap_0 == 2) monitor.wait()
         }
         value()
       case 3 => value_0
