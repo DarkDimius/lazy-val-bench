@@ -133,6 +133,61 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       threads.foreach(_.join())
     }
 
+    using(objects(i => new LazySimCellVersionD1Try(i))) curve("lazy-simulation-d1Try") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD1Try(i)
+    } tearDown {
+      arr => for (i <- 0 until arr.length) arr(i) = null
+    } in { array =>
+      val threads = for (_ <- 0 until 4) yield new Thread {
+        override def run() {
+          var i = 0
+          while (i < array.length) {
+            array(i).value
+            i += 1
+          }
+        }
+      }
+      threads.foreach(_.start())
+      threads.foreach(_.join())
+    }
+
+    using(objects(i => new LazySimCellVersionD2NoCASNoTry(i))) curve("lazy-simulation-d2-noCASnoTry") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD2NoCASNoTry(i)
+    } tearDown {
+      arr => for (i <- 0 until arr.length) arr(i) = null
+    } in { array =>
+      val threads = for (_ <- 0 until 4) yield new Thread {
+        override def run() {
+          var i = 0
+          while (i < array.length) {
+            array(i).value
+            i += 1
+          }
+        }
+      }
+      threads.foreach(_.start())
+      threads.foreach(_.join())
+    }
+
+
+    using(objects(i => new LazySimCellVersionD3NoCASTry(i))) curve("lazy-simulation-d3-noCASTry") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD3NoCASTry(i)
+    } tearDown {
+      arr => for (i <- 0 until arr.length) arr(i) = null
+    } in { array =>
+      val threads = for (_ <- 0 until 4) yield new Thread {
+        override def run() {
+          var i = 0
+          while (i < array.length) {
+            array(i).value
+            i += 1
+          }
+        }
+      }
+      threads.foreach(_.start())
+      threads.foreach(_.join())
+    }
+
 /*   using(objects(i => new LazyValsHm(i))) curve("lazy-simulation-HM") setUp {
       arr => for (i <- 0 until arr.length) arr(i) = new LazyValsHm(i)
     } tearDown {

@@ -270,6 +270,51 @@ package object example {
     }
   }
 
+  final class LazySimCellVersionD1Try(x: Int) extends LazyBitMap0{
+    import LazySimCellVersionD0._
+    var value_0: Int = _
+    @tailrec final def value(): Int = (bitmap_0: @switch) match {
+      case 0 =>
+        if (compareAndSet(this, 0, 1)) {
+          try {
+            val result = 0
+            value_0 = result
+          }
+          catch {
+            case e: Throwable=> 
+              complete(0); //allow other threads to continue computation
+              throw e
+          }
+
+          @tailrec def complete(newState: Int): Unit = (get(this): @switch) match {
+            case 1 =>
+              if (!compareAndSet(this, 1, newState)) complete(newState)
+            case 2 =>
+              if (compareAndSet(this, 2, newState)) {
+                getMonitor(this).synchronized { notifyAll() }
+              } else complete(newState)
+          }
+
+          complete(3)
+          value_0
+        } else value()
+      case 1 =>
+        if(compareAndSet(this, 1, 2)) {
+          getMonitor(this).synchronized {
+            while (get(this) == 2) wait()
+          }
+        }
+        value()
+      case 2 =>
+        getMonitor(this).synchronized {
+          while (get(this) == 2) wait()
+        }
+        value
+      case 3 => value_0
+    }
+  }
+
+
  // all this data is thought to be global for all lazy vals
 
   object LazySimCellVersionD0 {
@@ -304,6 +349,107 @@ package object example {
       }
     }
   }
+
+  final class LazySimCellVersionD2NoCASNoTry(x: Int) {
+    import LazySimCellVersionD0._
+    var value_0: Int = _
+    var bitmap_0: Int = 0
+    @tailrec final def value(): Int = (bitmap_0: @switch) match {
+      case 0 =>
+        var aquired = true
+        getMonitor(this).synchronized {
+          if (bitmap_0 == 0) {
+            bitmap_0 = 1
+          } else {
+            aquired = false
+            if (bitmap_0 == 1) {
+              bitmap_0 = 2
+            }
+            while (bitmap_0 == 2) wait()
+          }
+        }
+        if(aquired) {
+          val result = 0
+          value_0 = result
+          getMonitor(this).synchronized {
+            if (bitmap_0 == 2) notifyAll()
+            bitmap_0 = 3
+          }
+          value_0
+        }
+        else value()
+      case 1 =>
+        getMonitor(this).synchronized {
+          if (bitmap_0 == 1) {
+            bitmap_0 = 2
+          }
+          while (bitmap_0 == 2) wait()
+        }
+        value_0
+      case 2 =>
+        getMonitor(this).synchronized {
+          while (bitmap_0 == 2) wait()
+        }
+        value_0
+      case 3 => value_0
+    }
+  }
+
+  final class LazySimCellVersionD3NoCASTry(x: Int) {
+    import LazySimCellVersionD0._
+    var value_0: Int = _
+    var bitmap_0: Int = 0
+    @tailrec final def value(): Int = (bitmap_0: @switch) match {
+      case 0 =>
+        var aquired = true
+        getMonitor(this).synchronized {
+          if (bitmap_0 == 0) {
+            bitmap_0 = 1
+          } else {
+            aquired = false
+            if (bitmap_0 == 1) {
+              bitmap_0 = 2
+            }
+            while (bitmap_0 == 2) wait()
+          }
+        }
+        if(aquired) {
+          try {
+            val result = 0
+            value_0 = result
+            getMonitor(this).synchronized {
+              if (bitmap_0 == 2) notifyAll()
+              bitmap_0 = 3
+            }
+            value_0
+          }
+          catch {
+            case e: Throwable=>
+              getMonitor(this).synchronized {
+                if (bitmap_0 == 2) notifyAll()
+                bitmap_0 = 0
+              }
+              throw e
+          }
+        }
+        else value()
+      case 1 =>
+        getMonitor(this).synchronized {
+          if (bitmap_0 == 1) {
+            bitmap_0 = 2
+          }
+          while (bitmap_0 == 2) wait()
+        }
+        value()
+      case 2 =>
+        getMonitor(this).synchronized {
+          while (bitmap_0 == 2) wait()
+        }
+        value()
+      case 3 => value_0
+    }
+  }
+
 }
 
 
