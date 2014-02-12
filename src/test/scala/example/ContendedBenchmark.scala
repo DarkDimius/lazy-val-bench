@@ -19,11 +19,11 @@ class ContendedBenchmark extends PerformanceTest.Regression {
   }
 
   performance of "Contended" config (
-    exec.minWarmupRuns -> 10,
-    exec.maxWarmupRuns -> 30,
+    exec.minWarmupRuns -> 50,
+    exec.maxWarmupRuns -> 150,
     exec.benchRuns -> 30,
     exec.independentSamples -> 1,
-    exec.jvmflags -> ""
+    exec.jvmflags -> "-Xms3072M -Xmx3072M"
   ) in {
     using(objects(i => new Cell(i))) curve("non-lazy") setUp {
       arr => for (i <- 0 until arr.length) arr(i) = new Cell(i)
@@ -137,6 +137,16 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD1Try(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
+    } warmUp { 
+      val arr = new Array[LazySimCellVersionD1Try](1000000)
+      val a = 0
+      for (i <- 0 until arr.length) 
+        arr(i) = if(i%2==1) new LazySimCellVersionD1Try({sys.error("bla"); 2}) else new LazySimCellVersionD1Try(1)
+      for(x<- arr) 
+        try{ a += x.value} 
+        catch{
+          case e:Throwable => a += 1
+        }
     } in { array =>
       val threads = for (_ <- 0 until 4) yield new Thread {
         override def run() {

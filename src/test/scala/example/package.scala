@@ -273,14 +273,14 @@ package object example {
     }
   }
 
-  final class LazySimCellVersionD1Try(x: Int) extends LazyBitMap0{
+  final class LazySimCellVersionD1Try(x: => Int) extends LazyBitMap0{
     import LazySimCellVersionD0._
-    var value_0: Int = _
+    @volatile var value_0: Int = _
     @tailrec final def value(): Int = (bitmap_0: @switch) match {
       case 0 =>
         if (compareAndSet(this, 0, 1)) {
           try {
-            val result = 0
+            val result = x
             value_0 = result
           }
           catch {
@@ -356,7 +356,7 @@ package object example {
     }
   }
 
-  final class LazySimCellVersionD2NoCASNoTry(x: Int) {
+  final class LazySimCellVersionD2NoCASNoTry(x: =>Int) {
     import LazySimCellVersionD0._
     var value_0: Int = _
     var bitmap_0: Int = 0
@@ -376,7 +376,7 @@ package object example {
           }
         }
         if(aquired) {
-          val result = 0
+          val result = x
           value_0 = result
           monitor.synchronized {
             if (bitmap_0 == 2)  monitor.notifyAll()
@@ -404,7 +404,7 @@ package object example {
     }
   }
 
-  final class LazySimCellVersionD3NoCASTry(x: Int) {
+  final class LazySimCellVersionD3NoCASTry(x: =>Int) {
     import LazySimCellVersionD0._
     var value_0: Int = _
     var bitmap_0: Int = 0
@@ -426,7 +426,7 @@ package object example {
         if(aquired) {
           val monitor = getMonitor(this)
           try {
-            val result = 0
+            val result = x
             value_0 = result
             monitor.synchronized {
               if (bitmap_0 == 2) monitor.notifyAll()

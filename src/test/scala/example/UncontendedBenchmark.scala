@@ -134,7 +134,16 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
       }
     }
 
-    using(repetitions) curve("lazy-simulation-d1Try") in { n =>
+    using(repetitions) curve("lazy-simulation-d1Try") warmUp { 
+      val arr = new Array[LazySimCellVersionD1Try](100000)
+      for (i <- 0 until arr.length) 
+        arr(i) = if(i%2==1) new LazySimCellVersionD1Try({sys.error("bla"); 2}) else new LazySimCellVersionD1Try(1)
+      for(x<- arr) 
+        try{x.value} 
+        catch{
+          case e:Throwable => 1
+        }
+    } in { n =>
       var i = 0
       while (i < n) {
         val c = new LazySimCellVersionD1Try(i)
