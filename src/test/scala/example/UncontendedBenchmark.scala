@@ -10,21 +10,21 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
 
   def persistor = new SerializationPersistor
 
-  val repetitions = Gen.range("size")(100000, 500000, 100000)
+  val repetitions = Gen.range("size")(100000, 500000, 200000)
 
   val tinyRepetitions = Gen.range("size")(1000, 5000, 10000)
 
   var cell: AnyRef = null
 
   performance of "LazyVals" config (
-    exec.minWarmupRuns -> 50,
-    exec.maxWarmupRuns -> 150,
+    exec.minWarmupRuns -> 30,
+    exec.maxWarmupRuns -> 10,
     exec.benchRuns -> 25,
     exec.independentSamples -> 1,
     exec.jvmflags -> "-Xms3072M -Xmx3072M"
 //    ,exec.jvmcmd -> "java8 -server"
   ) in {
-    using(repetitions) curve("non-lazy") in { n =>
+    using(repetitions) curve("non-volatile") in { n =>
       var i = 0
       while (i < n) {
         val c = new Cell(i)
@@ -43,7 +43,7 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
         i += 1
       }
     }
-
+/*
     using(repetitions) curve("lazy-simulation-boolean-bitmap") in { n =>
       var i = 0
       while (i < n) {
@@ -113,11 +113,22 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
         i += 1
       }
     }
-
+ */
+/*
     using(repetitions) curve("lazy-simulation-v5") in { n =>
       var i = 0
       while (i < n) {
         val c = new LazySimCellVersion5(i)
+        cell = c
+        c.value
+        i += 1
+      }
+    }
+ */
+    using(repetitions) curve("lazy-simulation-d3Try") in { n =>
+      var i = 0
+      while (i < n) {
+        val c = new LazySimCellVersionD3Try(i)
         cell = c
         c.value
         i += 1
@@ -173,7 +184,7 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
       }
     }
 
-
+/*
     using(tinyRepetitions) curve("lazy-simulation-MH") in { n =>
       var i = 0
       while (i < n) {
@@ -183,6 +194,7 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
         i += 1
       }
     }
+ */
 
   }
 

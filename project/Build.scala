@@ -22,7 +22,8 @@ object BuildSettings {
             
     ),
     testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
-    logBuffered := false
+    logBuffered := false,
+    parallelExecution in Test := false
   )
 }
 

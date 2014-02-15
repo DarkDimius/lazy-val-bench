@@ -7,14 +7,20 @@ import annotation.{tailrec, switch}
 package object example {
 
   class Cell(x: Int) {
-    val value = 0
+    var bitmap_0 = 0
+    var value_0: Int = 0
+    def value = if (bitmap_0 == 1) value_0 else {
+      value_0 = x
+      bitmap_0 = 1
+      value_0
+    }
   }
 
-  class LazyCell(x: Int) {
-    lazy val value = 0
+  class LazyCell(x: =>Int) {
+    lazy val value = x
   }
 
-  final class LazySimCell(x: Int) {
+  final class LazySimCell(x: =>Int) {
     @volatile var bitmap_0: Boolean = false
     var value_0: Int = _
     private def value_lzycompute(): Int = {
@@ -23,7 +29,7 @@ package object example {
       // this is probably the reason this is 25% slower
       this.synchronized {
         if (!bitmap_0) {
-          value_0 = 0
+          value_0 = x
           bitmap_0 = true
         }
       }
@@ -32,13 +38,13 @@ package object example {
     def value = if (bitmap_0) value_0 else value_lzycompute()
   }
 
-  final class LazySimCellByteBitmap(x: Int) {
+  final class LazySimCellByteBitmap(x: =>Int) {
     @volatile var bitmap_0: Byte = 0.toByte
     var value_0: Int = _
     private def value_lzycompute(): Int = {
       this.synchronized {
         if (bitmap_0 == 0.toByte) {
-          value_0 = 0
+          value_0 = x
           bitmap_0 = 2.toByte
         }
       }
@@ -47,7 +53,7 @@ package object example {
     def value = if (bitmap_0 == 2.toByte) value_0 else value_lzycompute()
   }
 
-  final class LazySimCellVersion2WithoutNotify(x: Int) {
+  final class LazySimCellVersion2WithoutNotify(x: =>Int) {
     @volatile var bitmap_0: Byte = 0.toByte
     var value_0: Int = _
     private def value_lzycompute(): Int = {
@@ -61,7 +67,7 @@ package object example {
           return value_0
         }
       }
-      val result = 0
+      val result = x
       this.synchronized {
         value_0 = result
         bitmap_0 = 2.toByte
@@ -71,7 +77,7 @@ package object example {
     def value = if (bitmap_0 == 2.toByte) value_0 else value_lzycompute()
   }
 
-  final class LazySimCellVersion2(x: Int) {
+  final class LazySimCellVersion2(x: =>Int) {
     @volatile var bitmap_0: Byte = 0.toByte
     var value_0: Int = _
     private def value_lzycompute(): Int = {
@@ -85,7 +91,7 @@ package object example {
           return value_0
         }
       }
-      val result = 0
+      val result = x
       this.synchronized {
         value_0 = result
         bitmap_0 = 2.toByte
@@ -96,7 +102,7 @@ package object example {
     def value = if (bitmap_0 == 2.toByte) value_0 else value_lzycompute()
   }
 
-  final class LazySimCellVersion3(x: Int) {
+  final class LazySimCellVersion3(x: =>Int) {
     @volatile var bitmap_0: Byte = 0.toByte
     var value_0: Int = _
     private def value_lzycompute(): Int = {
@@ -114,7 +120,7 @@ package object example {
           return value_0
         }
       }
-      val result = 0
+      val result = x
       this.synchronized {
         val oldstate = bitmap_0
         value_0 = result
@@ -126,12 +132,12 @@ package object example {
     def value = if (bitmap_0 == 3.toByte) value_0 else value_lzycompute()
   }
 
-  final class LazySimCellVersion4(x: Int) extends java.util.concurrent.atomic.AtomicInteger {
+  final class LazySimCellVersion4(x: =>Int) extends java.util.concurrent.atomic.AtomicInteger {
     var value_0: Int = _
     @tailrec final def value(): Int = (get: @switch) match {
       case 0 =>
         if (compareAndSet(0, 1)) {
-          val result = 0
+          val result = x
           value_0 = result
           if (getAndSet(3) != 1) synchronized { notifyAll() }
           result
@@ -151,13 +157,13 @@ package object example {
     }
   }
 
-  final class LazySimCellVersion4General(x: Int) extends LazySimCellWithPublicBitmap {
+  final class LazySimCellVersion4General(x: =>Int) extends LazySimCellWithPublicBitmap {
     import LazySimCellWithPublicBitmap._
-    var value_0: Int = _
+    @volatile var value_0: Int = _
     @tailrec final def value(): Int = (arfu_0.get(this): @switch) match {
       case 0 =>
         if (arfu_0.compareAndSet(this, 0, 1)) {
-          val result = 0
+          val result = x
           value_0 = result
 
           @tailrec def complete(): Unit = (arfu_0.get(this): @switch) match {
@@ -187,19 +193,19 @@ package object example {
     }
   }
 
-  final class LazySimCellVersion5(x: Int) extends LazySimCellWithPublicBitmap {
+  final class LazySimCellVersion5(x: =>Int) extends LazySimCellWithPublicBitmap {
     import LazySimCellWithPublicBitmap._
-    var value_0: Int = _
-    var bitmap2: Int= _
+    @volatile var value_0: Int = _
+    @volatile var bitmap2: Int= _
 
     final def value():Int = {
-      if(bitmap2 == 1) value_0
+      if(bitmap2 == 3) value_0
       else value0()
     }
     @tailrec final def value0(): Int = (arfu_0.get(this): @switch) match {
       case 0 =>
         if (arfu_0.compareAndSet(this, 0, 1)) {
-          val result = 0
+          val result = x
           value_0 = result
           bitmap2 = 1
           @tailrec def complete(): Unit = (arfu_0.get(this): @switch) match {
@@ -229,18 +235,66 @@ package object example {
     }
   }
 
+  final class LazySimCellVersionD3Try(x: =>Int) extends LazyBitMap0 {
+    import LazySimCellVersionD0._
+    @volatile var value_0: Int = _
+
+    @tailrec final def value(): Int = (get(this): @switch) match {
+      case 0 =>
+        if (compareAndSet(this, 0, 1)) {
+          @tailrec def complete(value: Int): Unit = (get(this): @switch) match {
+            case 1 =>
+              if (!compareAndSet(this, 1, value)) complete(value)
+            case 2 =>
+              if (compareAndSet(this, 2, value)) {
+                val monitor = getMonitor(this)
+                monitor.synchronized { monitor.notifyAll() }
+              } else complete(value)
+          }
+
+          val result = try {
+            x
+          }
+          catch {
+            case e: Throwable =>
+              complete(0)
+              throw e
+          }
+
+          value_0 = result
+
+          complete(3)
+          result
+        } else value()
+      case 1 =>
+        compareAndSet(this, 1, 2)
+        val monitor = getMonitor(this)
+        monitor.synchronized {
+          while (get(this) == 2) monitor.wait()
+        }
+        value
+      case 2 =>
+        val monitor = getMonitor(this)
+        monitor.synchronized {
+          while (get(this) == 2) monitor.wait()
+        }
+        value
+      case 3 => value_0
+    }
+  }
+
   class LazyBitMap0 {
     var bitmap_0: Int = 0
   }
 
 
-  final class LazySimCellVersionD0(x: Int) extends LazyBitMap0{
+  final class LazySimCellVersionD0(x: => Int) extends LazyBitMap0{
     import LazySimCellVersionD0._
-    var value_0: Int = _
+    @volatile var value_0: Int = _
     @tailrec final def value(): Int = (bitmap_0: @switch) match {
       case 0 =>
         if (compareAndSet(this, 0, 1)) {
-          val result = 0
+          val result = x
           value_0 = result
 
           @tailrec def complete(): Unit = (get(this): @switch) match {

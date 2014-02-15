@@ -4,13 +4,18 @@ package example
 
 import org.scalameter.api._
 
+import org.scalameter.api._
 
 
-class benchmarks extends PerformanceTest.Regression {
-  def persistor = Persistor.None
 
-  include[UncontendedBenchmark]
+class benchmarks extends PerformanceTest.Regression with Serializable {
+
+  /* config */
+
+  def persistor = new SerializationPersistor
+
+  /* tests */
+
   include[ContendedBenchmark]
-  include[MemoryFootprint]
-
+  include[UncontendedBenchmark]
 }
