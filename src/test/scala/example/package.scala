@@ -6,7 +6,7 @@ import annotation.{tailrec, switch}
 
 package object example {
 
-  class Cell(x: Int) {
+  class Cell(x: =>Int) {
     var bitmap_0 = 0
     var value_0: Int = 0
     def value = if (bitmap_0 == 1) value_0 else {
