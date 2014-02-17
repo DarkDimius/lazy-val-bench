@@ -283,6 +283,68 @@ package object example {
     }
   }
 
+
+  final class LazySimCellVersionD3TrySpin(x: =>Int) extends LazyBitMap0 {
+    import LazySimCellVersionD0._
+    @volatile var value_0: Int = _
+
+    @tailrec final def value(): Int = (get(this): @switch) match {
+      case 3 => value_0
+      case 0 =>
+        if (compareAndSet(this, 0, 1)) {
+          @tailrec def complete(value: Int): Unit = (get(this): @switch) match {
+            case 1 =>
+              if (!compareAndSet(this, 1, value)) complete(value)
+            case 2 =>
+              if (compareAndSet(this, 2, value)) {
+                val monitor = getMonitor(this)
+                monitor.synchronized { monitor.notifyAll() }
+              } else complete(value)
+          }
+
+          val result = try {
+            x
+          }
+          catch {
+            case e: Throwable =>
+              complete(0)
+              throw e
+          }
+
+          value_0 = result
+
+          complete(3)
+          result
+        } else value()
+      case _ =>
+        var r = 1
+        var spins = 1 << 8
+        var state = 1
+        while (spins >= 0 && (state != 3)) {
+          r ^= r << 1; r ^= r >>> 3; r ^= r << 10;
+          if (r >= 0) spins -=1
+          state = get(this)
+        }
+        (state: @switch) match {
+          case 0 => value
+          case 1 =>  
+            compareAndSet(this, 1, 2)
+            val monitor = getMonitor(this)
+            monitor.synchronized {
+              while (get(this) == 2) monitor.wait()
+            }
+            value
+          case 2 =>
+            val monitor = getMonitor(this)
+            monitor.synchronized {
+              while (get(this) == 2) monitor.wait()
+            }
+            value
+          case 3 => value_0
+        }
+    }
+  }
+
   class LazyBitMap0 {
     var bitmap_0: Int = 0
   }

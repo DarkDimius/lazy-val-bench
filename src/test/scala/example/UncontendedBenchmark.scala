@@ -135,6 +135,16 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
       }
     }
 
+    using(repetitions) curve("lazy-simulation-d3TrySpin") in { n =>
+      var i = 0
+      while (i < n) {
+        val c = new LazySimCellVersionD3TrySpin(i)
+        cell = c
+        c.value
+        i += 1
+      }
+    }
+
     using(repetitions) curve("lazy-simulation-d0") in { n =>
       var i = 0
       while (i < n) {

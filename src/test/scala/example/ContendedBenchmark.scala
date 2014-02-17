@@ -143,6 +143,34 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       threads.foreach(_.start())
       threads.foreach(_.join())
     }
+
+    using(objects(i => new LazySimCellVersionD3TrySpin(i))) curve("lazy-simulation-D3TrySpin") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD3TrySpin(i)
+    } tearDown {
+      arr => for (i <- 0 until arr.length) arr(i) = null
+    } warmUp { 
+      val arr = new Array[LazySimCellVersionD3TrySpin](10000)
+      var a = 0
+      for (i <- 0 until arr.length) 
+        arr(i) = if(i%2==1) new LazySimCellVersionD3TrySpin({sys.error("bla"); 2}) else new LazySimCellVersionD3TrySpin(1)
+      for(x<- arr) 
+        try{ a += x.value} 
+        catch{
+          case e:Throwable => a += 1
+        }
+    } in { array =>
+      val threads = for (_ <- 0 until 4) yield new Thread {
+        override def run() {
+          var i = 0
+          while (i < array.length) {
+            array(i).value
+            i += 1
+          }
+        }
+      }
+      threads.foreach(_.start())
+      threads.foreach(_.join())
+    }
 /*
     using(objects(i => new LazySimCellVersionD0(i))) curve("lazy-simulation-d0") setUp {
       arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD0(i)
