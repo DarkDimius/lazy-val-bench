@@ -118,47 +118,47 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
     using(repetitions) curve("lazy-simulation-v5") in { n =>
       var i = 0
       while (i < n) {
-        val c = new LazySimCellVersion5(i)
+        val c = new LazySimCellVersion41(i)
         cell = c
         c.value
         i += 1
       }
     }
  */
-    using(repetitions) curve("lazy-simulation-d3Try") in { n =>
+    using(repetitions) curve("lazy-simulation-v5") in { n =>
       var i = 0
       while (i < n) {
-        val c = new LazySimCellVersionD3Try(i)
+        val c = new LazySimCellVersionV5(i)
         cell = c
         c.value
         i += 1
       }
     }
 
-    using(repetitions) curve("lazy-simulation-d3TrySpin") in { n =>
+    using(repetitions) curve("lazy-simulation-V5Spin") in { n =>
       var i = 0
       while (i < n) {
-        val c = new LazySimCellVersionD3TrySpin(i)
+        val c = new LazySimCellVersionV5Spin(i)
         cell = c
         c.value
         i += 1
       }
     }
 
-    using(repetitions) curve("lazy-simulation-d0") in { n =>
+    using(repetitions) curve("lazy-simulation-v6") in { n =>
       var i = 0
       while (i < n) {
-        val c = new LazySimCellVersionD0(i)
+        val c = new LazySimCellVersionV6(i)
         cell = c
         c.value
         i += 1
       }
     }
 
-    using(repetitions) curve("lazy-simulation-d1Try") warmUp { 
-      val arr = new Array[LazySimCellVersionD1Try](100000)
+    using(repetitions) curve("lazy-simulation-v7") warmUp { 
+      val arr = new Array[LazySimCellVersionV7](100000)
       for (i <- 0 until arr.length) 
-        arr(i) = if(i%2==1) new LazySimCellVersionD1Try({sys.error("bla"); 2}) else new LazySimCellVersionD1Try(1)
+        arr(i) = if(i%2==1) new LazySimCellVersionV7({sys.error("bla"); 2}) else new LazySimCellVersionV7(1)
       for(x<- arr) 
         try{x.value} 
         catch{
@@ -167,7 +167,7 @@ class UncontendedBenchmark extends PerformanceTest.Regression with Serializable 
     } in { n =>
       var i = 0
       while (i < n) {
-        val c = new LazySimCellVersionD1Try(i)
+        val c = new LazySimCellVersionV7(i)
         cell = c
         c.value
         i += 1

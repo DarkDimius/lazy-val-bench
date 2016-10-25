@@ -97,8 +97,8 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       threads.foreach(_.join())
     }
 
-    using(objects(i => new LazySimCellVersion5(i))) curve("lazy-simulation-v5") setUp {
-      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersion5(i)
+    using(objects(i => new LazySimCellVersion41(i))) curve("lazy-simulation-v41") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersion41(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
     } in { array =>
@@ -116,15 +116,15 @@ class ContendedBenchmark extends PerformanceTest.Regression {
     }
  */
 
-    using(objects(i => new LazySimCellVersionD3Try(i))) curve("lazy-simulation-D3Try") setUp {
-      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD3Try(i)
+    using(objects(i => new LazySimCellVersionV5(i))) curve("lazy-simulation-V5") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionV5(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
     } warmUp { 
-      val arr = new Array[LazySimCellVersionD3Try](10000)
+      val arr = new Array[LazySimCellVersionV5](10000)
       var a = 0
       for (i <- 0 until arr.length) 
-        arr(i) = if(i%2==1) new LazySimCellVersionD3Try({sys.error("bla"); 2}) else new LazySimCellVersionD3Try(1)
+        arr(i) = if(i%2==1) new LazySimCellVersionV5({sys.error("bla"); 2}) else new LazySimCellVersionV5(1)
       for(x<- arr) 
         try{ a += x.value} 
         catch{
@@ -144,15 +144,15 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       threads.foreach(_.join())
     }
 
-    using(objects(i => new LazySimCellVersionD3TrySpin(i))) curve("lazy-simulation-D3TrySpin") setUp {
-      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD3TrySpin(i)
+    using(objects(i => new LazySimCellVersionV5Spin(i))) curve("lazy-simulation-V5Spin") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionV5Spin(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
     } warmUp { 
-      val arr = new Array[LazySimCellVersionD3TrySpin](10000)
+      val arr = new Array[LazySimCellVersionV5Spin](10000)
       var a = 0
       for (i <- 0 until arr.length) 
-        arr(i) = if(i%2==1) new LazySimCellVersionD3TrySpin({sys.error("bla"); 2}) else new LazySimCellVersionD3TrySpin(1)
+        arr(i) = if(i%2==1) new LazySimCellVersionV5Spin({sys.error("bla"); 2}) else new LazySimCellVersionV5Spin(1)
       for(x<- arr) 
         try{ a += x.value} 
         catch{
@@ -171,9 +171,9 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       threads.foreach(_.start())
       threads.foreach(_.join())
     }
-/*
-    using(objects(i => new LazySimCellVersionD0(i))) curve("lazy-simulation-d0") setUp {
-      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD0(i)
+
+    using(objects(i => new LazySimCellVersionV6(i))) curve("lazy-simulation-v6") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionV6(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
     } in { array =>
@@ -190,17 +190,17 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       threads.foreach(_.join())
     }
 
-    using(objects(i => new LazySimCellVersionD1Try(i))) curve("lazy-simulation-d1Try") setUp {
-      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD1Try(i)
+    using(objects(i => new LazySimCellVersionV7(i))) curve("lazy-simulation-v7") setUp {
+      arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionV7(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
-    } warmUp { 
-      val arr = new Array[LazySimCellVersionD1Try](10000)
+    } warmUp {
+      val arr = new Array[LazySimCellVersionV7](10000)
       var a = 0
-      for (i <- 0 until arr.length) 
-        arr(i) = if(i%2==1) new LazySimCellVersionD1Try({sys.error("bla"); 2}) else new LazySimCellVersionD1Try(1)
-      for(x<- arr) 
-        try{ a += x.value} 
+      for (i <- 0 until arr.length)
+        arr(i) = if(i%2==1) new LazySimCellVersionV7({sys.error("bla"); 2}) else new LazySimCellVersionV7(1)
+      for(x<- arr)
+        try{ a += x.value}
         catch{
           case e:Throwable => a += 1
         }
@@ -217,7 +217,7 @@ class ContendedBenchmark extends PerformanceTest.Regression {
       threads.foreach(_.start())
       threads.foreach(_.join())
     }
- */
+
 
     using(objects(i => new LazySimCellVersionD2NoCASNoTry(i))) curve("lazy-simulation-d2-noCASnoTry") setUp {
       arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionD2NoCASNoTry(i)

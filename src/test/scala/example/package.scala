@@ -193,7 +193,7 @@ package object example {
     }
   }
 
-  final class LazySimCellVersion5(x: =>Int) extends LazySimCellWithPublicBitmap {
+  final class LazySimCellVersion41(x: =>Int) extends LazySimCellWithPublicBitmap {
     import LazySimCellWithPublicBitmap._
     @volatile var value_0: Int = _
     @volatile var bitmap2: Int= _
@@ -235,7 +235,7 @@ package object example {
     }
   }
 
-  final class LazySimCellVersionD3Try(x: =>Int) extends LazyBitMap0 {
+  final class LazySimCellVersionV5(x: =>Int) extends LazyBitMap0 { // original name: D3Try
     import LazySimCellVersionD0._
     @volatile var value_0: Int = _
 
@@ -284,7 +284,7 @@ package object example {
   }
 
 
-  final class LazySimCellVersionD3TrySpin(x: =>Int) extends LazyBitMap0 {
+  final class LazySimCellVersionV5Spin(x: =>Int) extends LazyBitMap0 { // Original name: D3TrySpin
     import LazySimCellVersionD0._
     @volatile var value_0: Int = _
 
@@ -350,7 +350,7 @@ package object example {
   }
 
 
-  final class LazySimCellVersionD0(x: => Int) extends LazyBitMap0{
+  final class LazySimCellVersionV6(x: => Int) extends LazyBitMap0{ // OriginalName: D0
     import LazySimCellVersionD0._
     @volatile var value_0: Int = _
     @tailrec final def value(): Int = (bitmap_0: @switch) match {
@@ -389,7 +389,7 @@ package object example {
     }
   }
 
-  final class LazySimCellVersionD1Try(x: => Int) extends LazyBitMap0{
+  final class LazySimCellVersionV7(x: => Int) extends LazyBitMap0{ // Original name: D1Try
     import LazySimCellVersionD0._
     @volatile var value_0: Int = _
     @tailrec final def value(): Int = (bitmap_0: @switch) match {
