@@ -18,4 +18,6 @@ class benchmarks extends PerformanceTest.Regression with Serializable {
 
   include[ContendedBenchmark]
   include[UncontendedBenchmark]
+  include[MemoryFootprint]
+  include[SwitchPointBenchmark]
 }
