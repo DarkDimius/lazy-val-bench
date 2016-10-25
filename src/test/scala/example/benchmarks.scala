@@ -379,6 +379,16 @@ class benchmarks extends PerformanceTest.Regression with Serializable {
       arr => for (i <- 0 until arr.length) arr(i) = new LazySimCellVersionV6(i)
     } tearDown {
       arr => for (i <- 0 until arr.length) arr(i) = null
+    } warmUp {
+      val arr = new Array[LazySimCellVersionV6](10000)
+      var a = 0
+      for (i <- 0 until arr.length)
+        arr(i) = if(i%2==1) new LazySimCellVersionV6({sys.error("bla"); 2}) else new LazySimCellVersionV6(1)
+      for(x<- arr)
+        try{ a += x.value}
+        catch{
+          case e:Throwable => a += 1
+        }
     } in { array =>
       val threads = for (_ <- 0 until 4) yield new Thread {
         override def run() {

@@ -66,7 +66,7 @@ class MemoryFootprint extends PerformanceTest.Regression {
       array
     }
 
-    using(objects[LazySimCellVersionV7]) curve("lazy-simulation-d1") in { array =>
+    using(objects[LazySimCellVersionV7]) curve("lazy-simulation-v7") in { array =>
       for (i <- 0 until array.length) array(i) = new LazySimCellVersionV7(i)
       array
     }
