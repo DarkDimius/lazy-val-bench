@@ -11,10 +11,7 @@ class MemoryFootprint extends PerformanceTest.Regression {
   def persistor = new SerializationPersistor
   override def measurer = new Executor.Measurer.MemoryFootprint
 
-  val repetitions = Gen.range("size")(1000000, 5000000, 1000000)
-  def objects[T <: AnyRef: ClassTag] = for (sz <- repetitions) yield {
-    new Array[T](sz)
-  }
+
 
   performance of "Memory" config (
     exec.minWarmupRuns -> 5,
@@ -23,6 +20,12 @@ class MemoryFootprint extends PerformanceTest.Regression {
     exec.independentSamples -> 1,
     exec.jvmflags -> ""
   ) in {
+
+    val repetitions = Gen.range("size")(1000000, 5000000, 1000000)
+    def objects[T <: AnyRef: ClassTag] = for (sz <- repetitions) yield {
+      new Array[T](sz)
+    }
+
     using(objects[Cell]) curve("non-lazy") in { array =>
       for (i <- 0 until array.length) array(i) = new Cell(i)
       array
